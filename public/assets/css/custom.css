@@ -1,0 +1,117 @@
+:root[data-topbar=dark] {
+  --vz-header-bg: #2f3a64;
+}
+
+:root, [data-bs-theme=light] {
+  --vz-warning: #daba60;
+}
+
+.menu-title {
+  color: var(--vz-header-bg);
+}
+
+.navbar-menu .navbar-nav .nav-link:hover {
+    color: #353a61;
+    font-weight: 400;
+}
+
+.navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse][aria-expanded=true] {
+  color: #353a61;
+  font-weight: 400;
+}
+
+.navbar-menu .navbar-nav .nav-link.active {
+  color: #353a61;
+  font-weight: 400;
+}
+
+.form-control:disabled {
+    background-color: #fbfbfb;
+    opacity: 1;
+    border: none;
+}
+
+/* TimeLine */
+.vertical-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 156px;
+  height: 100%;
+  width: 4px;
+  background: #e9ecef;
+  border-radius: .25rem;
+}
+
+.vertical-timeline-element {
+  position: relative;
+  margin: 0 0 1rem;
+}
+
+.vertical-timeline--animate .vertical-timeline-element-icon.bounce-in {
+  visibility: visible;
+  animation: cd-bounce-1 .8s;
+}
+.vertical-timeline-element-icon {
+  position: absolute;
+  top: 0;
+  left: 131px;
+}
+
+.vertical-timeline-element-icon .badge-dot-xl {
+  box-shadow: 0 0 0 5px #fff;
+}
+
+.badge-dot-xl {
+  width: 18px;
+  height: 18px;
+  position: relative;
+}
+.badge:empty {
+  display: none;
+}
+
+
+.badge-dot-xl::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: .25rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -5px 0 0 -5px;
+  background: #fff;
+}
+
+.vertical-timeline-element-content {
+  position: relative;
+  margin-left: 155px;
+  font-size: .8rem;
+}
+
+.vertical-timeline-element-content .timeline-title {
+  font-size: .8rem;
+  text-transform: uppercase;
+  margin: 0 0 .5rem;
+  padding: 2px 0 0;
+  font-weight: bold;
+}
+
+.vertical-timeline-element-content .vertical-timeline-element-date {
+  display: block;
+  position: absolute;
+  left: -154px;
+  top: 0;
+  padding-right: 10px;
+  text-align: right;
+  color: #adb5bd;
+  font-size: .7619rem;
+  white-space: nowrap;
+}
+
+.vertical-timeline-element-content:after {
+  content: "";
+  display: table;
+  clear: both;
+}
