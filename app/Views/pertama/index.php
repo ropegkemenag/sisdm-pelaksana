@@ -13,7 +13,7 @@
           <a class="nav-link active" data-bs-toggle="tab" href="#nav-pegawai" role="tab">Data Pegawai</a>
       </li>
       <li class="nav-item waves-effect waves-light">
-          <a class="nav-link" data-bs-toggle="tab" href="#nav-proses" role="tab">Proses <span class="badge bg-danger">35</span></a>
+          <a class="nav-link" data-bs-toggle="tab" href="#nav-proses" role="tab">Proses <span class="badge bg-danger"><?= $total_proses; ?></span></a>
       </li>
       <li class="nav-item waves-effect waves-light">
           <a class="nav-link" data-bs-toggle="tab" href="#nav-tt" role="tab">Tanda Tangan <span class="badge bg-danger">0</span></a>
@@ -77,6 +77,10 @@
               <th>NIP BARU</th>
               <th>NAMA</th>
               <th>JABATAN</th>
+              <th>JABATAN BARU</th>
+              <th>NO SK</th>
+              <th>TANGGAL SK</th>
+              <th>TMT</th>
               <th>UNIT KERJA</th>
               <th></th>
             </tr>
@@ -88,6 +92,10 @@
               <th>NIP BARU</th>
               <th>NAMA</th>
               <th>JABATAN</th>
+              <th>JABATAN BARU</th>
+              <th>NO SK</th>
+              <th>TANGGAL SK</th>
+              <th>TMT</th>
               <th>UNIT KERJA</th>
               <th></th>
             </tr>
@@ -142,6 +150,7 @@ $(document).ready(function() {
     });
 
   $(".select2").select2();
+  $("#selectJabBaru").select2();
   $('#satker1').on('change', function(event) {
     getsatker($('#satker1').val());
     $('#selectsatker2').css('display','');
@@ -155,16 +164,17 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-          url: '<?= site_url('pertama/getdataproses')?>',
-            data: function (d) {
-                d.unit = $('#unit').val();
-            }
+          url: '<?= site_url('pertama/getdataproses')?>'
         },
         columns: [
             {data: 'nip'},
-            {data: 'NAMA_LENGKAP'},
-            {data: 'TAMPIL_JABATAN'},
-            {data: 'SATKER_2'},
+            {data: 'nama_lengkap'},
+            {data: 'tampil_jabatan'},
+            {data: 'jabatan_baru'},
+            {data: 'no_sk'},
+            {data: 'tgl_sk'},
+            {data: 'tmt'},
+            {data: 'satker'},
             {data: 'action', orderable: false}
         ]
     });
@@ -178,7 +188,8 @@ function getsatker($id) {
 }
 
 function add($nip) {
-  axios.get('pertama/add/'+$nip+'/1')
+  const encodedNip = encodeURIComponent($nip);
+  axios.get('pertama/add/'+encodedNip+'/1')
   .then(function (response) {
     if(response.data.status == 'success'){
       alert('Pegawai telah ditambahkan');
@@ -187,6 +198,44 @@ function add($nip) {
       alert(response.data.message);
     }
   });
+}
+
+function proses(button)
+{
+  const row = $(button).closest('tr');
+
+  const nip = $(button).data('nip');
+  const jabatanBaru = row.find('.jabatan-baru').val();
+  const noSk = row.find('#no_sk').val();
+  const tglSk = row.find('#tgl_sk').val();
+  const tmt = row.find('#tmt').val();
+  
+  if (!noSk || !tglSk || !tmt) {
+        alert('Semua input harus diisi!');
+        return;
+  }
+
+  axios.post('pertama/proses', {
+      nip: nip,
+      jabatan_baru: jabatanBaru,
+      no_sk: noSk,
+      tgl_sk: tglSk,
+      tmt: tmt
+  })
+  .then(response => {
+      if (response.data.status === 'success') {
+          alert(response.data.message);
+          // Refresh tabel setelah sukses
+          tableproses.ajax.reload();
+      } else {
+          alert(response.data.message);
+      }
+  })
+  .catch(error => {
+      console.error(error);
+      alert('Terjadi kesalahan saat memproses data.');
+  });
+
 }
 
 function resum()

@@ -20,4 +20,5 @@ $routes->group("pertama",['filter' => 'auth'], function ($routes) {
     $routes->get('getdataproses', 'Pertama::getdataproses');
     $routes->get('Pertama/(:any)', 'Pertama::getdata/$1');
     $routes->get('add/(:any)', 'Pertama::add/$1/$2');
+    $routes->post('proses', 'Pertama::proses');
 });
