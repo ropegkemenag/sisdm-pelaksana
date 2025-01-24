@@ -74,13 +74,12 @@
         <table id="datatablesproses" class="display table table-bordered dt-responsive fonttab" style="width:100%">
           <thead>
             <tr>
-              <th>NIP BARU</th>
-              <th>NAMA</th>
+              <th>NAMA/NIP</th>
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
-              <th>NO SK</th>
               <th>TANGGAL SK</th>
               <th>TMT</th>
+              <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
             </tr>
@@ -89,13 +88,12 @@
           </tbody>
           <tfoot>
             <tr>
-              <th>NIP BARU</th>
-              <th>NAMA</th>
+              <th>NAMA/NIP</th>
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
-              <th>NO SK</th>
               <th>TANGGAL SK</th>
               <th>TMT</th>
+              <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
             </tr>
@@ -121,6 +119,24 @@
   </div>
     
   </div><!--end col-->
+</div>
+
+<div id="modalview" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-scroll="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Preview SK</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="$('#addform').submit()">Kirim</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?= $this->endSection() ?>
@@ -167,15 +183,18 @@ $(document).ready(function() {
           url: '<?= site_url('pertama/getdataproses')?>'
         },
         columns: [
-            {data: 'nip'},
-            {data: 'nama_lengkap'},
+            {
+              data: null,
+              render: function(data, type, row) {
+              return row.nama_lengkap + '<br><small>' + row.nip + '</small>';
+            },orderable: false},
             {data: 'tampil_jabatan'},
             {data: 'jabatan_baru'},
-            {data: 'no_sk'},
             {data: 'tgl_sk'},
             {data: 'tmt'},
+            {data: 'no_sk'},
             {data: 'satker'},
-            {data: 'action', orderable: false}
+            {data: 'action',orderable: false}
         ]
     });
 });
@@ -236,6 +255,28 @@ function proses(button)
       alert('Terjadi kesalahan saat memproses data.');
   });
 
+}
+
+function generate (button) {
+  const nip = $(button).data('nip');
+  axios.post('pertama/generate',{
+    nip: nip,
+  })
+  .then(response => {
+    console.log(response);
+    
+      if (response.data.status === 'success') {
+          alert(response.data.message);
+          // Refresh tabel setelah sukses
+          tableproses.ajax.reload();
+      } else {
+          alert(response.data.message);
+      }
+  })
+  .catch(error => {
+      console.error(error);
+      alert('Terjadi kesalahan saat memproses data.');
+  });
 }
 
 function resum()
