@@ -9,6 +9,7 @@ use App\Models\SatkerModel;
 use App\Models\UsulModel;
 use \Hermawan\DataTables\DataTable;
 use PhpOffice\PhpWord\TemplateProcessor;
+use App\Services\UploadService;
 
 class Pertama extends BaseController
 {
@@ -187,15 +188,34 @@ class Pertama extends BaseController
         $filePath = WRITEPATH . 'uploads/' . 'document_' . $nip . '.docx';
         $template->saveAs($filePath);
 
-        $model = new UsulModel();
-        $data = [
-            'link_sk' => $filePath,
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
+        $upload = new UploadService();
+        $name = $nip; 
+        $location = 'sk/draft';
+        $result = $upload->upload($filePath, $name, $location);
 
-        $update = $model->where('nip', $nip)->set($data)->update();
 
-        return $filePath;
+        if ($result['status']) {
+            // Hapus file lokal setelah sukses upload
+            unlink($filePath);
+        
+            // Simpan URL MinIO ke database
+            $model = new UsulModel();
+            $data = [
+                'link_sk' => $result['url'],
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+            $model->where('nip', $nip)->set($data)->update();
+            return [
+                'status' => true,
+                'message' => 'Berhasil generate dan upload'
+            ];
+
+        } else {
+            return [
+                'status' => false,
+                'message' => 'Gagal generate dan upload'. $result['message']
+            ];
+        }
 
     }
 }

@@ -71,7 +71,7 @@
     <div class="tab-pane" id="nav-proses" role="tabpanel">
       <div class="card border card-border-warning">
         <div class="card-body">
-        <table id="datatablesproses" class="display table table-bordered dt-responsive fonttab" style="width:100%">
+        <table id="datatablesproses" class="display table table-bordered dt-responsive fonttab" style="width: 100%;">
           <thead>
             <tr>
               <th>NAMA/NIP</th>
@@ -265,7 +265,7 @@ function generate (button) {
   .then(response => {
     console.log(response);
     
-      if (response.data.status === 'success') {
+      if (response.data.status === true) {
           alert(response.data.message);
           // Refresh tabel setelah sukses
           tableproses.ajax.reload();
