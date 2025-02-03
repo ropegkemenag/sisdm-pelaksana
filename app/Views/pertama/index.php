@@ -259,6 +259,7 @@ function proses(button)
 
 function generate (button) {
   const nip = $(button).data('nip');
+  console.log("Menjalankan generate dengan NIP:", nip);
   axios.post('pertama/generate',{
     nip: nip,
   })
@@ -277,6 +278,11 @@ function generate (button) {
       console.error(error);
       alert('Terjadi kesalahan saat memproses data.');
   });
+}
+
+function view (button) { 
+  const url = $(button).data('url');
+  window.open(url, '_blank');
 }
 
 function resum()
