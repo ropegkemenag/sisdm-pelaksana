@@ -13,6 +13,8 @@ $routes->get('auth/callback', 'Auth::callback');
 
 $routes->get('/', 'Home::index');
 $routes->get('dashboard', 'Home::dashboard',['filter' => 'auth']);
+$routes->get('pengaturan', 'Pengaturan::index',['filter' => 'auth']);
+$routes->post('pengaturan/save', 'Pengaturan::save',['filter' => 'auth']);
 
 $routes->group("pertama",['filter' => 'auth'], function ($routes) {
     $routes->get('', 'Pertama::index');

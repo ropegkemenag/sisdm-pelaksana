@@ -291,7 +291,7 @@
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Setting</span></li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="<?= site_url('layanan/usul')?>">
+                            <a class="nav-link menu-link" href="<?= site_url('pengaturan')?>">
                                 <i class="ri-honour-line"></i> <span data-key="t-widgets">Pengaturan</span>
                             </a>
                         </li>

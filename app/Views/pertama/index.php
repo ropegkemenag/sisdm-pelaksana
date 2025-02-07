@@ -166,7 +166,7 @@ $(document).ready(function() {
     });
 
   $(".select2").select2();
-  $("#selectJabBaru").select2();
+  $(".jabatan-baru").select2();
   $('#satker1').on('change', function(event) {
     getsatker($('#satker1').val());
     $('#selectsatker2').css('display','');
@@ -195,7 +195,14 @@ $(document).ready(function() {
             {data: 'no_sk'},
             {data: 'satker'},
             {data: 'action',orderable: false}
-        ]
+        ],
+        drawCallback: function(settings) {
+            // Inisialisasi Select2 setiap kali tabel di-render ulang
+            $('.jabatan-baru').select2({
+                placeholder: 'Pilih Jabatan Baru',
+                allowClear: true
+            });
+        }
     });
 });
 

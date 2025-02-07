@@ -78,12 +78,13 @@ class Pertama extends BaseController
         }
 
       })->add('jabatan_baru', function($row) use ($jabatan_baru){
-        $options = '';
+        // $options = '';
+        $options = '<option disabled selected>Pilih Jabatan Baru</option>';
         foreach ($jabatan_baru as $value) {
             $selected = ($value['id'] == $row->id_jabatan_baru) ? 'selected' : '';
             $options .= '<option value="'.$value['id'].'"' . $selected . '>'.$value['jabatan'].'</option>';
         }
-        return '<select class="form-select form-control jabatan-baru">'.$options.'</select>';
+        return '<select class="form-select form-control jabatan-baru" id="jabatan-baru">'.$options.'</select>';
       })
       ->add('no_sk', function($row){
         return '<input type="text" class="form-control" id="no_sk" name="no_sk" value="'.$row->nomer_sk.'">';
