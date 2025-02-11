@@ -209,20 +209,20 @@ class Pertama extends BaseController
         $template->saveAs($filePath);
 
         if (!file_exists($filePath)) {
-            return [
-                'status' => false,
+            return $this->response->setJSON([
+                'status' => 'error',
                 'message' => 'Gagal menyimpan file Word'
-            ];
+            ]);
         }
 
         // 2️⃣ Konversi ke PDF via API
         $convRes = $this->convertDoctoPDF($filePath);
         log_message('error', 'Response from API: ' . print_r($convRes, true));
         if (!$convRes['status']) {
-            return [
-                'status' => false,
+            return $this->response->setJSON([
+                'status' => 'error',
                 'message' => 'Gagal konversi PDF: ' . $convRes['message']
-            ];
+            ]);
         }
 
         // 3️⃣ Simpan hasil PDF ke lokal sebelum upload
@@ -230,10 +230,10 @@ class Pertama extends BaseController
         file_put_contents($pdfPath, $convRes['response']);
         log_message('error', 'simpan hasil pdf Response: ' . print_r($pdfPath, true));
         if (!file_exists($pdfPath)) {
-            return [
-                'status' => false,
+            return $this->response->setJSON([
+                'status' => 'error',
                 'message' => 'Gagal menyimpan file PDF'
-            ];
+            ]);
         }
 
         // 4️⃣ Upload ke MinIO
@@ -243,10 +243,10 @@ class Pertama extends BaseController
         $uploadRes = $upload->upload($pdfPath, $name, $location);
         log_message('error', 'Upload Response: ' . print_r($uploadRes, true));
         if (!$uploadRes['status']) {
-            return [
-                'status' => false,
+            return $this->response->setJSON([
+                'status' => 'error',
                 'message' => 'Gagal upload PDF ke MinIO'
-            ];
+            ]);
         }
 
         // 5️⃣ Simpan URL ke Database
@@ -263,11 +263,11 @@ class Pertama extends BaseController
         unlink($filePath);
         unlink($pdfPath);
 
-        return [
-            'status' => true,
+        return $this->response->setJSON([
+            'status' => 'success',
             'message' => 'Berhasil generate dan upload',
             'pdf_url' => $uploadRes['url']
-        ];
+        ]);
 
         // if ($convRes['status']) {
         //     // Hapus file lokal setelah sukses upload
@@ -303,6 +303,7 @@ class Pertama extends BaseController
         $pwdapi     = 'B1R0kePeG4w4ai4n$1Khl4sB3r4MaL';
 
         if (!file_exists($file)) {
+            log_message('error', 'File tidak ditemukan: ' . $file);
             return ['status' => false, 'message' => 'File not found'];
         }
 
@@ -342,7 +343,7 @@ class Pertama extends BaseController
         log_message('error', 'CURL Error: ' . $error);
         log_message('error', 'API Response: ' . $response);
 
-        if ($httpCode == 200) {
+        if ($httpCode == 200 && !empty($response)) {
             return ['status' => true, 'message' => 'Conversion successful', 'response' => $response];
         } else {
             return ['status' => false, 'message' => 'Conversion failed: ' . $error, 'response' => $response];
