@@ -13,7 +13,7 @@ class PengaturanModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'nama_satker', 'nip_kepala', 'nama_kepala', 'nip_pengelola','kode_satker'
+        'nama_satker', 'nip_kepala', 'nama_kepala', 'nip_pengelola','kode_satker','lokasi_ttd', 'jabatan_kepala'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -23,7 +23,7 @@ class PengaturanModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

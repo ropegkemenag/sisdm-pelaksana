@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\PengaturanModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SimpegModel;
 use App\Models\SatkerModel;
@@ -183,6 +184,9 @@ class Pertama extends BaseController
                                                   ->join('TEMP_PEGAWAI b', 'a.nip = b.NIP_BARU','left')
                                                   ->join('tm_jabatan c', 'a.id_jabatan_baru = c.id','left');
                                                   $result = $builder->get()->getRowArray();
+        $mpengaturan = new PengaturanModel();
+        $pengaturan = $mpengaturan->where('kode_satker',session('kelola'))->get()->getRow();
+        
         // 1️⃣ Generate File Word
         $template = new TemplateProcessor('document/template_sk_jabatan_pelaksana.docx');
 
@@ -194,11 +198,12 @@ class Pertama extends BaseController
         $template->setValue('pendidikan', $result['JENJANG_PENDIDIKAN']);
         $template->setValue('jabatan_lama', $result['jabatan_lama']);
         $template->setValue('jabatan_baru', $result['jabatan_baru']);
-        $template->setValue('lokasi', 'Jakarta');
+        $template->setValue('lokasi', $pengaturan->lokasi_ttd);
         $template->setValue('tmtsk', $result['tmt_SK']);
-        $template->setValue('kepala', 'KEPALA');
-        $template->setValue('namakepala', 'namakepala');
-        $template->setValue('nipkepala', '1234567890');
+        $template->setValue('kepala', $pengaturan->jabatan_kepala);
+        $template->setValue('namakepala', $pengaturan->nama_kepala);
+        $template->setValue('nipkepala',  $pengaturan->nip_kepala);
+        $template->setValue('satker',  $pengaturan->nama_satker);
 
         $filePath = WRITEPATH . 'uploads/' . 'document_' . $nip . '.docx';
         $template->saveAs($filePath);
