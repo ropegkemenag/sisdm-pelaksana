@@ -26,3 +26,13 @@ $routes->group("pertama",['filter' => 'auth'], function ($routes) {
     $routes->post('proses', 'Pertama::proses');
     $routes->post('generate', 'Pertama::generateDoc');
 });
+
+$routes->group("pindah",['filter' => 'auth'], function ($routes) {
+    $routes->get('', 'PindahJabatan::index');
+    $routes->get('getdata', 'PindahJabatan::getdata');
+    $routes->get('getdataproses', 'PindahJabatan::getdataproses');
+    $routes->get('Pertama/(:any)', 'PindahJabatan::getdata/$1');
+    $routes->get('add/(:any)', 'PindahJabatan::add/$1/$2');
+    $routes->post('proses', 'Pertama::proses');
+    $routes->post('generate', 'Pertama::generateDoc');
+});

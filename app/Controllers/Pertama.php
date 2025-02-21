@@ -51,12 +51,14 @@ class Pertama extends BaseController
                                                 a.no_sk as nomer_sk, 
                                                 a.tgl_sk as tgl_SK, 
                                                 a.tmt_sk as tmt_SK, 
+                                                a.kelas_jabatan as kelas_jabatan, 
                                                 a.link_sk as link_sk,
                                                 a.status as status,
                                                 a.id_jabatan_baru as id_jabatan_baru,
                                                 b.NAMA_LENGKAP as nama_lengkap,
                                                 b.TAMPIL_JABATAN as tampil_jabatan,
                                                 b.SATKER_2 as satker')
+                                                ->where('jenis',1)
                                                 ->join('TEMP_PEGAWAI b', 'a.nip = b.NIP_BARU','left');
 
       $jabatan_baru = $db->table('tm_jabatan')->get()->getResultArray();
@@ -93,8 +95,11 @@ class Pertama extends BaseController
       ->add('tgl_sk', function($row){
         return '<input type="date" class="form-control" id="tgl_sk" name="tgl_sk" value="'.$row->tgl_SK.'">';
       })
-      ->add('tmt', function($row){
-        return '<input type="date" class="form-control" id="tmt" name="tmt" value="'.$row->tmt_SK.'">';
+    //   ->add('tmt', function($row){
+    //     return '<input type="date" class="form-control" id="tmt" name="tmt" value="'.$row->tmt_SK.'">';
+    //   })
+      ->add('kelas_jabatan', function($row){
+        return '<input type="text" class="form-control" id="kelas_jabatan" name="kelas_jabatan" value="'.$row->kelas_jabatan.'">';
       })
       
       
@@ -128,9 +133,10 @@ class Pertama extends BaseController
         $jabatanBaru = $this->request->getVar('jabatan_baru');
         $noSk = $this->request->getVar('no_sk');
         $tglSk = $this->request->getVar('tgl_sk');
-        $tmt = $this->request->getVar('tmt');
+        $kelasJabatan = $this->request->getVar('kelas_jabatan');
+        // $tmt = $this->request->getVar('tmt');
 
-        if (!$noSk || !$tglSk || !$tmt) {
+        if (!$noSk || !$tglSk || !$kelasJabatan) {
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Ada yang kosong, harus diisi!',
@@ -143,7 +149,8 @@ class Pertama extends BaseController
             'id_jabatan_baru' => $jabatanBaru,
             'no_sk' => $noSk,
             'tgl_sk' => $tglSk,
-            'tmt_sk' => $tmt,
+            'kelas_jabatan' => $kelasJabatan,
+            // 'tmt_sk' => $tmt,
             'status' => 1,
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -172,6 +179,8 @@ class Pertama extends BaseController
                                                   a.tgl_sk as tgl_SK, 
                                                   a.tmt_sk as tmt_SK, 
                                                   a.id_jabatan_baru as id_jabatan_baru,
+                                                  a.jenis as jenis,
+                                                  a.kelas_jabatan as kelas_jabatan,
                                                   b.NAMA_LENGKAP as nama_lengkap,
                                                   b.TAMPIL_JABATAN as tampil_jabatan,
                                                   b.SATKER_2 as satker,
@@ -185,24 +194,37 @@ class Pertama extends BaseController
                                                   ->join('tm_jabatan c', 'a.id_jabatan_baru = c.id','left');
                                                   $result = $builder->get()->getRowArray();
         $mpengaturan = new PengaturanModel();
-        $pengaturan = $mpengaturan->where('kode_satker',session('kelola'))->get()->getRow();
+        $pengaturan = $mpengaturan->where('kode_satker',session('kelola'))->where('jenis',1)->get()->getRow();
         
         // 1️⃣ Generate File Word
         $template = new TemplateProcessor('document/template_sk_jabatan_pelaksana.docx');
 
-        $template->setValue('nomorsk', $result['nomer_sk']);
+        $tgl_end_sk = date("m/Y", strtotime($result['tgl_SK']));
+        $kodesurat  = $pengaturan->kode_surat;
+        $no_depan   = $result['nomer_sk'];
+        $final_nosk = $no_depan.'/'.$kodesurat.'/'.$tgl_end_sk;
+
+        $format_tgl_sk = strftime("%d %B %Y", strtotime($result['tgl_SK']));
+        $kls_jab = $result['kelas_jabatan'];
+        $format_kls_jabatan = preg_replace("/\((.*?)\)/", "(<em>$1</em>)", $kls_jab);
+        
+
+
+        $template->setValue('nomorsk', $final_nosk);
         $template->setValue('nama', $result['nama_lengkap']);
         $template->setValue('nip', $result['nip']);
         $template->setValue('pangkat', $result['PANGKAT']);
         $template->setValue('gol_ruang', $result['GOL_RUANG']);
         $template->setValue('pendidikan', $result['JENJANG_PENDIDIKAN']);
-        $template->setValue('jabatan_lama', $result['jabatan_lama']);
+        // $template->setValue('jabatan_lama', $result['jabatan_lama']);
         $template->setValue('jabatan_baru', $result['jabatan_baru']);
-        $template->setValue('lokasi', $pengaturan->lokasi_ttd);
-        $template->setValue('tmtsk', $result['tmt_SK']);
-        $template->setValue('kepala', $pengaturan->jabatan_kepala);
-        $template->setValue('namakepala', $pengaturan->nama_kepala);
-        $template->setValue('nipkepala',  $pengaturan->nip_kepala);
+        $template->setValue('kelas_jabatan', $result['kelas_jabatan']);
+        $template->setValue('lokasi', $pengaturan->tempat_ditetapkan);
+        $template->setValue('tglsk', $format_tgl_sk);
+        // $template->setValue('tmtsk', $result['tmt_SK']);
+        $template->setValue('kepala', $pengaturan->jabatan);
+        $template->setValue('namakepala', $pengaturan->nama_pejabat);
+        $template->setValue('nipkepala',  $pengaturan->nip_pejabat);
         $template->setValue('satker',  $pengaturan->nama_satker);
 
         $filePath = WRITEPATH . 'uploads/' . 'document_' . $nip . '.docx';
@@ -227,8 +249,9 @@ class Pertama extends BaseController
 
         // 3️⃣ Simpan hasil PDF ke lokal sebelum upload
         $pdfPath = WRITEPATH . 'uploads/' . 'document_' . $nip . '.pdf';
-        file_put_contents($pdfPath, $convRes['response']);
+        $cek = file_put_contents($pdfPath, $convRes['response']);
         log_message('error', 'simpan hasil pdf Response: ' . print_r($pdfPath, true));
+        log_message('error', 'pdf response: ' . print_r($cek, true));
         if (!file_exists($pdfPath)) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -266,7 +289,7 @@ class Pertama extends BaseController
         return $this->response->setJSON([
             'status' => 'success',
             'message' => 'Berhasil generate dan upload',
-            'pdf_url' => $uploadRes['url']
+            'pdf_url' => $uploadRes
         ]);
 
         // if ($convRes['status']) {
@@ -308,6 +331,7 @@ class Pertama extends BaseController
         }
 
         $ch = curl_init();
+        $postData = file_get_contents($file);
         // $postData = [
         //     'file' => new CURLFile($file),
         // ];
@@ -315,8 +339,6 @@ class Pertama extends BaseController
         // $postData = [
         //     'file' => new CURLFile($file, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', basename($file)),
         // ];
-
-        $postData = file_get_contents($file);
         // $postData = [
         //     'file' => base64_encode($fileData),
         // ];
@@ -342,6 +364,9 @@ class Pertama extends BaseController
         log_message('error', 'HTTP Code: ' . $httpCode);
         log_message('error', 'CURL Error: ' . $error);
         log_message('error', 'API Response: ' . $response);
+        log_message('error', 'Header Response: ' . CURLINFO_CONTENT_TYPE);
+        $receivedContentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        log_message('error', 'Received Content-Type: ' . $receivedContentType);
 
         if ($httpCode == 200 && !empty($response)) {
             return ['status' => true, 'message' => 'Conversion successful', 'response' => $response];

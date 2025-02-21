@@ -40,7 +40,7 @@ class UploadService {
                 'Bucket'      => $this->bucket,
                 'Key'         => $location . '/' . $file_name,
                 'SourceFile'  => $temp_file_location,
-                'ContentType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                'ContentType' => 'application/pdf'
             ]);
 
             return [

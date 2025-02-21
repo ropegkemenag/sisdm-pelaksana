@@ -271,13 +271,13 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="<?= site_url('pertama')?>">
-                                <i class="ri-honour-line"></i> <span data-key="t-widgets">Pengangkatan Pertama</span>
+                                <i class="ri-honour-line"></i> <span data-key="t-widgets">Penyesuaian Nomenklatur</span>
                             </a>
                         </li>
 
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="<?= site_url('pindahjabatan')?>">
+                        <!-- <li class="nav-item">
+                            <a class="nav-link menu-link" href="<?= site_url('pindah')?>">
                                 <i class="ri-honour-line"></i> <span data-key="t-widgets">Pindah Jabatan</span>
                             </a>
                         </li>
@@ -287,6 +287,12 @@
                                 <i class="ri-honour-line"></i> <span data-key="t-widgets">Penyelesaian</span>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="<?= site_url('penyelesaian')?>">
+                                <i class="ri-honour-line"></i> <span data-key="t-widgets">SK CPNS</span>
+                            </a>
+                        </li> -->
 
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Setting</span></li>
 

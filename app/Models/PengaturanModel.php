@@ -12,8 +12,21 @@ class PengaturanModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'nama_satker', 'nip_kepala', 'nama_kepala', 'nip_pengelola','kode_satker','lokasi_ttd', 'jabatan_kepala'
+    // protected $allowedFields    = [];
+    protected $allowedFields = [
+        'nip_pejabat',
+        'nama_pejabat',
+        'an_pejabat',
+        'jabatan',
+        'tempat_ditetapkan',
+        'kode_surat',
+        'keputasan_atas',
+        'keputasan_bawah',
+        'org_tata_kerja',
+        'kode_satker',
+        'nip_pengelola',
+        'nama_satker',
+        'jenis'
     ];
 
     protected bool $allowEmptyInserts = false;

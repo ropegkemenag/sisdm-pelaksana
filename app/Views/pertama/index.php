@@ -6,6 +6,18 @@
 
 <?= $this->section('content') ?>
 
+<!-- Header Halaman -->
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <div class="card card-light">
+      <div class="card-body">
+        <h4 class="mb-0 card-text">Penyesuaian Nomenklatur</h4>
+        <p class="mb-0">Kelola data pegawai, proses mutasi, tanda tangan, dan status selesai.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-lg-12">
   <ul class="nav nav-pills nav-custom-outline nav-primary mb-3" role="tablist">
@@ -78,7 +90,7 @@
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
               <th>TANGGAL SK</th>
-              <th>TMT</th>
+              <th>KELAS JABATAN</th>
               <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
@@ -92,7 +104,7 @@
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
               <th>TANGGAL SK</th>
-              <th>TMT</th>
+              <th>KELAS JABATAN</th>
               <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
@@ -191,7 +203,7 @@ $(document).ready(function() {
             {data: 'tampil_jabatan'},
             {data: 'jabatan_baru'},
             {data: 'tgl_sk'},
-            {data: 'tmt'},
+            {data: 'kelas_jabatan'},
             {data: 'no_sk'},
             {data: 'satker'},
             {data: 'action',orderable: false}
@@ -235,8 +247,9 @@ function proses(button)
   const noSk = row.find('#no_sk').val();
   const tglSk = row.find('#tgl_sk').val();
   const tmt = row.find('#tmt').val();
+  const kelasjabatan = row.find('#kelas_jabatan').val();
   
-  if (!noSk || !tglSk || !tmt) {
+  if (!noSk || !tglSk || !kelasjabatan) {
         alert('Semua input harus diisi!');
         return;
   }
@@ -246,7 +259,7 @@ function proses(button)
       jabatan_baru: jabatanBaru,
       no_sk: noSk,
       tgl_sk: tglSk,
-      tmt: tmt
+      kelas_jabatan: kelasjabatan
   })
   .then(response => {
       if (response.data.status === 'success') {
@@ -277,7 +290,9 @@ function generate (button) {
           alert(response.data.message);
           // Refresh tabel setelah sukses
           tableproses.ajax.reload();
-      } else {
+          window.location.reload();
+        } else {
+          window.location.reload();
           alert(response.data.message);
       }
   })
