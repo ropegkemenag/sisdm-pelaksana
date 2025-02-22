@@ -88,4 +88,9 @@ class Pengaturan extends BaseController
         return redirect()->to('/pengaturan')->with('success', $message);
         
     }
+
+    public function petunjuk()
+    {
+        return view('petunjuk');
+    }
 }
