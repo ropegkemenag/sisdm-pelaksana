@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\SimpegModel;
 use App\Models\SatkerModel;
 use App\Models\UsulModel;
+use App\Services\LogService;
 use \Hermawan\DataTables\DataTable;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Services\UploadService;
@@ -47,7 +48,7 @@ class Pertama extends BaseController
     public function getdataproses()
     {
       $db = \Config\Database::connect('default', false);
-      $builder = $db->table('tr_usul a')->select('a.nip as nip, 
+      $builder = $db->table('tr_usul a')->select('a.id as id,a.nip as nip, 
                                                 a.no_sk as nomer_sk, 
                                                 a.tgl_sk as tgl_SK, 
                                                 a.tmt_sk as tmt_SK, 
@@ -63,18 +64,19 @@ class Pertama extends BaseController
 
       $jabatan_baru = $db->table('tm_jabatan')->get()->getResultArray();
 
-    //   status 1 = prosess
-    //  status 2 = generate sk
-    // status 3 = tte
+    //   status 1 = usul
+    //  status 2 = proses
+    // status 3 = genereate 
+    // status 4 = tte 
 
       return DataTable::of($builder)
       ->add('action', function($row){
-          $btnProses = '<a href="javascript:;" type="button" class="btn btn-primary btn-sm" onclick="proses(this)" data-nip="' . $row->nip . '">Proses</a>';
-          $btnGenerate = '<a href="javascript:;" type="button" class="btn btn-warning btn-sm" onclick="generate(this)" data-nip="' . $row->nip . '">Generate</a>'; 
+          $btnProses = '<a href="javascript:;" type="button" class="btn btn-primary btn-sm" onclick="proses(this)" data-id="' . $row->id . '" data-nip="' . $row->nip . '">Proses</a>';
+          $btnGenerate = '<a href="javascript:;" type="button" class="btn btn-warning btn-sm" onclick="generate(this)" data-id="' . $row->id . '" data-nip="' . $row->nip . '">Generate</a>'; 
           $btnView = '<a href="javascript:;" type="button" class="btn btn-secondary btn-sm" onclick="view(this)" data-url="'.$row->link_sk.'" data-nip="' . $row->nip . '">View</a>'; 
-        if ($row->status == 2) {
+        if ($row->status == 3) {
             return $btnView;
-        }else if ($row->status == 1) {
+        }else if ($row->status == 2) {
             return $btnGenerate;
         }else{
             return $btnProses;
@@ -107,6 +109,10 @@ class Pertama extends BaseController
     }
 
     public function add($nip,$type) {
+        //   status 1 = usul
+        //  status 2 = proses
+        // status 3 = genereate 
+        // status 4 = tte 
         $model = new UsulModel;
         $simpeg = new SimpegModel;
         $cek = $model->where(['nip'=>$nip,'status'=>1])->find();
@@ -119,16 +125,29 @@ class Pertama extends BaseController
             $param = [
                 'jenis' => $type,
                 'nip' => $nip,
-                'kode_satker' => session('kelola')
+                'kode_satker' => session('kelola'),
+                'status' => 1
             ];
 
             $insert = $model->insert($param);
+            $idUsul = $model->insertID();
+            // insert log
+            $log = new LogService();
+            // $id_usul,$status,$keterangan,$kode_satker,$nama_satker,$created_by,$created_by_name
+            $log->insert($idUsul,1,'usul',session('kodesatker4'),session('satker4'),session('nip'),session('nama'));
+
             return $this->response->setJSON(['status'=>'success']);
         }
     }
 
     public function proses()
     {
+        //   status 1 = usul
+        //  status 2 = proses
+        // status 3 = genereate 
+        // status 4 = tte 
+
+        $id = $this->request->getVar('id');
         $nip = $this->request->getVar('nip');
         $jabatanBaru = $this->request->getVar('jabatan_baru');
         $noSk = $this->request->getVar('no_sk');
@@ -151,11 +170,15 @@ class Pertama extends BaseController
             'tgl_sk' => $tglSk,
             'kelas_jabatan' => $kelasJabatan,
             // 'tmt_sk' => $tmt,
-            'status' => 1,
+            'status' => 2,
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
-        $update = $model->where('nip', $nip)->set($data)->update();
+        $update = $model->where('id', $id)->set($data)->update();
+
+        $log = new LogService();
+        // $id_usul,$status,$keterangan,$kode_satker,$nama_satker,$created_by,$created_by_name
+        $log->insert($id,2,'proses lengkapi data',session('kodesatker4'),session('satker4'),session('nip'),session('nama'));
 
         if ($update) {
             return $this->response->setJSON([
@@ -172,9 +195,10 @@ class Pertama extends BaseController
 
     public function generateDoc()
     {
+        $id = $this->request->getVar('id');
         $nip = $this->request->getVar('nip');
         $db = \Config\Database::connect('default', false);
-        $builder = $db->table('tr_usul a')->select('a.nip as nip, 
+        $builder = $db->table('tr_usul a')->select('a.id as id,a.nip as nip, 
                                                   a.no_sk as nomer_sk, 
                                                   a.tgl_sk as tgl_SK, 
                                                   a.tmt_sk as tmt_SK, 
@@ -189,7 +213,7 @@ class Pertama extends BaseController
                                                   b.GOL_RUANG,
                                                   b.TAMPIL_JABATAN as jabatan_lama,
                                                   c.jabatan as jabatan_baru')
-                                                  ->where('a.nip',$nip)
+                                                  ->where('a.id',$id)
                                                   ->join('TEMP_PEGAWAI b', 'a.nip = b.NIP_BARU','left')
                                                   ->join('tm_jabatan c', 'a.id_jabatan_baru = c.id','left');
                                                   $result = $builder->get()->getRowArray();
@@ -276,15 +300,20 @@ class Pertama extends BaseController
         $model = new UsulModel();
         $data = [
             'link_sk' => $uploadRes['url'],
-            'status' => 2,
+            'status' => 3,
             'updated_at' => date('Y-m-d H:i:s'),
         ];
         log_message('error', 'Updating database with: ' . print_r($data, true));
-        $model->where('nip', $nip)->set($data)->update();
+        $model->where('id', $id)->set($data)->update();
 
         // 6️⃣ Hapus file lokal setelah sukses upload
         unlink($filePath);
         unlink($pdfPath);
+
+        // insert log
+        $log = new LogService();
+        // $id_usul,$status,$keterangan,$kode_satker,$nama_satker,$created_by,$created_by_name
+        $log->insert($id,2,'generate draft',session('kodesatker4'),session('satker4'),session('nip'),session('nama'));
 
         return $this->response->setJSON([
             'status' => 'success',
