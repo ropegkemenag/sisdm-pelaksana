@@ -262,7 +262,7 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="<?= site_url('usulan')?>">
+                            <a class="nav-link menu-link" href="<?= site_url('dashboard')?>">
                                 <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashboard</span>
                             </a>
                         </li>
@@ -303,7 +303,7 @@
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="<?= site_url('layanan/lainnya')?>">
+                            <a class="nav-link menu-link" href="<?= site_url('petunjuk')?>">
                                 <i class="ri-honour-line"></i> <span data-key="t-widgets">Petunjuk Penggunaan</span>
                             </a>
                         </li>

@@ -157,6 +157,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script type="text/javascript">
+var tableproses;
 $(document).ready(function() {
 
   var table = $('#datatables').DataTable({
@@ -188,7 +189,7 @@ $(document).ready(function() {
         table.ajax.reload();
     });
 
-    var tableproses = $('#datatablesproses').DataTable({
+      tableproses = $('#datatablesproses').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -231,7 +232,8 @@ function add($nip) {
   .then(function (response) {
     if(response.data.status == 'success'){
       alert('Pegawai telah ditambahkan');
-      resum();
+      window.location.reload();
+      // resum();
     }else{
       alert(response.data.message);
     }
@@ -242,6 +244,7 @@ function proses(button)
 {
   const row = $(button).closest('tr');
 
+  const id = $(button).data('id');
   const nip = $(button).data('nip');
   const jabatanBaru = row.find('.jabatan-baru').val();
   const noSk = row.find('#no_sk').val();
@@ -255,6 +258,7 @@ function proses(button)
   }
 
   axios.post('pertama/proses', {
+      id: id,
       nip: nip,
       jabatan_baru: jabatanBaru,
       no_sk: noSk,
@@ -262,30 +266,41 @@ function proses(button)
       kelas_jabatan: kelasjabatan
   })
   .then(response => {
+    console.log(response);
+    
       if (response.data.status === 'success') {
           alert(response.data.message);
+          console.log('Reloading table...');
+          console.log(tableproses);
           // Refresh tabel setelah sukses
           tableproses.ajax.reload();
+          if (tableproses) {
+                tableproses.ajax.reload(null, false); // Reload tanpa reset pagination
+            } else {
+              alert('gagal reload table, coba reload halaman')
+                console.error('tableproses is undefined!');
+            }
       } else {
           alert(response.data.message);
       }
   })
-  .catch(error => {
-      console.error(error);
-      alert('Terjadi kesalahan saat memproses data.');
-  });
 
 }
 
 function generate (button) {
+  const id = $(button).data('id');
   const nip = $(button).data('nip');
   console.log("Menjalankan generate dengan NIP:", nip);
+
+  const originalText = $(button).html();
+  $(button).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+
   axios.post('pertama/generate',{
+    id: id,
     nip: nip,
   })
   .then(response => {
     console.log(response);
-    
       if (response.data.status === true) {
           alert(response.data.message);
           // Refresh tabel setelah sukses
@@ -296,9 +311,10 @@ function generate (button) {
           alert(response.data.message);
       }
   })
-  .catch(error => {
-      console.error(error);
-      alert('Terjadi kesalahan saat memproses data.');
+  .finally(() => {
+    // Kembalikan tombol ke kondisi semula
+    $(button).prop('disabled', false).html(originalText);
+    tableproses.ajax.reload();
   });
 }
 
