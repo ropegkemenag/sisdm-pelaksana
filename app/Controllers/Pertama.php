@@ -330,7 +330,7 @@ class Pertama extends BaseController
         // insert log
         $log = new LogService();
         // $id_usul,$status,$keterangan,$kode_satker,$nama_satker,$created_by,$created_by_name
-        $log->insert($id,2,'generate draft',session('kodesatker4'),session('satker4'),session('nip'),session('nama'));
+        $log->insert($id,3,'generate draft',session('kodesatker4'),session('satker4'),session('nip'),session('nama'));
 
         return $this->response->setJSON([
             'status' => 'success',
