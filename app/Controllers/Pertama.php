@@ -228,7 +228,24 @@ class Pertama extends BaseController
         $no_depan   = $result['nomer_sk'];
         $final_nosk = $no_depan.'/'.$kodesurat.'/'.$tgl_end_sk;
 
-        $format_tgl_sk = strftime("%d %B %Y", strtotime($result['tgl_SK']));
+        $formattedDate = date('d F Y', strtotime($result['tgl_SK']));
+        $indonesianMonths = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+        $format_tgl_sk = str_replace(array_keys($indonesianMonths), $indonesianMonths, $formattedDate);
+
+        // $format_tgl_sk = strftime("%d %B %Y", strtotime($result['tgl_SK']));
         $kls_jab = $result['kelas_jabatan'];
         $format_kls_jabatan = preg_replace("/\((.*?)\)/", "(<em>$1</em>)", $kls_jab);
         
