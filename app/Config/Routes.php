@@ -17,6 +17,7 @@ $routes->get('pengaturan', 'Pengaturan::index',['filter' => 'auth']);
 $routes->post('pengaturan/save', 'Pengaturan::save',['filter' => 'auth']);
 $routes->get('pengaturan/carinip', 'Pengaturan::cariNip',['filter' => 'auth']);
 $routes->get('petunjuk', 'Pengaturan::petunjuk',['filter' => 'auth']);
+$routes->get('getjabatan/(:num)', 'Pertama::getJabatan/$1',['filter' => 'auth']);
 
 $routes->group("pertama",['filter' => 'auth'], function ($routes) {
     $routes->get('', 'Pertama::index');

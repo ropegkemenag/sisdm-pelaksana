@@ -87,10 +87,11 @@
           <thead>
             <tr>
               <th>NAMA/NIP</th>
+              <th>PENDIDIKAN</th>
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
-              <th>TANGGAL SK</th>
               <th>KELAS JABATAN</th>
+              <th>TANGGAL SK</th>
               <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
@@ -101,10 +102,11 @@
           <tfoot>
             <tr>
               <th>NAMA/NIP</th>
+              <th>PENDIDIKAN</th>
               <th>JABATAN</th>
               <th>JABATAN BARU</th>
-              <th>TANGGAL SK</th>
               <th>KELAS JABATAN</th>
+              <th>TANGGAL SK</th>
               <th>NO SK</th>
               <th>UNIT KERJA</th>
               <th></th>
@@ -179,7 +181,7 @@ $(document).ready(function() {
     });
 
   $(".select2").select2();
-  $(".jabatan-baru").select2();
+  // $(".jabatan-baru").select2();
   $('#satker1').on('change', function(event) {
     getsatker($('#satker1').val());
     $('#selectsatker2').css('display','');
@@ -201,23 +203,41 @@ $(document).ready(function() {
               render: function(data, type, row) {
               return row.nama_lengkap + '<br><small>' + row.nip + '</small>';
             },orderable: false},
+            {data: 'pendidikan'},
             {data: 'tampil_jabatan'},
             {data: 'jabatan_baru'},
-            {data: 'tgl_sk'},
             {data: 'kelas_jabatan'},
+            {data: 'tgl_sk'},
             {data: 'no_sk'},
             {data: 'satker'},
             {data: 'action',orderable: false}
         ],
-        drawCallback: function(settings) {
-            // Inisialisasi Select2 setiap kali tabel di-render ulang
-            $('.jabatan-baru').select2({
+        columnDefs: [
+          { width: "1px", targets: 1 } // Mengatur lebar kolom 'pendidikan' (index 1)
+        ],
+        drawCallback: function () {
+          initSelect2s();
+        }
+      });
+
+
+});
+
+function initSelect2s() {
+  console.log("Tabel selesai dirender, menerapkan Select2...");
+    $('.jabatan-baru').each(function (index, element) {
+      console.log("Dropdown ke-" + index, $(element).hasClass("select2-hidden-accessible"));
+        if (!$(this).hasClass("select2-hidden-accessible")) {
+            $(this).select2({
                 placeholder: 'Pilih Jabatan Baru',
-                allowClear: true
+                allowClear: true,
+                dropdownParent: $(this).closest('td') // Pastikan dropdown tetap di dalam tabel
             });
+        }else {
+            console.log("Select2 sudah aktif:", this);
         }
     });
-});
+}
 
 function getsatker($id) {
   axios.get('manajemen/pegawai/getcountsatker/'+$id)

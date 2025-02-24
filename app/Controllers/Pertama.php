@@ -57,6 +57,7 @@ class Pertama extends BaseController
                                                 a.status as status,
                                                 a.id_jabatan_baru as id_jabatan_baru,
                                                 b.NAMA_LENGKAP as nama_lengkap,
+                                                b.JENJANG_PENDIDIKAN as pendidikan,
                                                 b.TAMPIL_JABATAN as tampil_jabatan,
                                                 b.SATKER_2 as satker')
                                                 ->where('jenis',1)
@@ -89,7 +90,7 @@ class Pertama extends BaseController
             $selected = ($value['id'] == $row->id_jabatan_baru) ? 'selected' : '';
             $options .= '<option value="'.$value['id'].'"' . $selected . '>'.$value['jabatan'].'</option>';
         }
-        return '<select class="form-select form-control jabatan-baru" id="jabatan-baru">'.$options.'</select>';
+        return '<select class="form-select form-control jabatan-baru jabbaru" id="jabatan-baru-'.$row->id.'">'.$options.'</select>';
       })
       ->add('no_sk', function($row){
         return '<input type="text" class="form-control" id="no_sk" name="no_sk" value="'.$row->nomer_sk.'">';
@@ -101,11 +102,22 @@ class Pertama extends BaseController
     //     return '<input type="date" class="form-control" id="tmt" name="tmt" value="'.$row->tmt_SK.'">';
     //   })
       ->add('kelas_jabatan', function($row){
-        return '<input type="text" class="form-control" id="kelas_jabatan" name="kelas_jabatan" value="'.$row->kelas_jabatan.'">';
+        return '<input type="text" class="form-control kelas_jabatan" id="kelas_jabatan" name="kelas_jabatan" value="'.$row->kelas_jabatan.'">';
       })
       
       
       ->toJson(true);
+    }
+
+    public function getJabatan($id){
+        $db = \Config\Database::connect('default', false);
+        $jabatan_baru = $db->table('tm_jabatan')->where('id',$id)->get()->getRow();
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Berhasil ambil data',
+            'data'    => $jabatan_baru
+        ]);
+        
     }
 
     public function add($nip,$type) {
