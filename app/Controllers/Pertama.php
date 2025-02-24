@@ -90,7 +90,7 @@ class Pertama extends BaseController
             $selected = ($value['id'] == $row->id_jabatan_baru) ? 'selected' : '';
             $options .= '<option value="'.$value['id'].'"' . $selected . '>'.$value['jabatan'].'</option>';
         }
-        return '<select class="form-select form-control jabatan-baru jabbaru" id="jabatan-baru-'.$row->id.'">'.$options.'</select>';
+        return '<select class="form-select form-control jabatan-baru jabbaru" id="jabatan-baru-'.$row->id.'" onchange="updateKelasJabatan(this, '.$row->id.')">'.$options.'</select>';
       })
       ->add('no_sk', function($row){
         return '<input type="text" class="form-control" id="no_sk" name="no_sk" value="'.$row->nomer_sk.'">';
@@ -102,7 +102,7 @@ class Pertama extends BaseController
     //     return '<input type="date" class="form-control" id="tmt" name="tmt" value="'.$row->tmt_SK.'">';
     //   })
       ->add('kelas_jabatan', function($row){
-        return '<input type="text" class="form-control kelas_jabatan" id="kelas_jabatan" name="kelas_jabatan" value="'.$row->kelas_jabatan.'">';
+        return '<input type="text" class="form-control kelas_jabatan" id="kelas_jabatan_'.$row->id.'" name="kelas_jabatan" value="'.$row->kelas_jabatan.'" readonly>';
       })
       
       
@@ -258,11 +258,8 @@ class Pertama extends BaseController
         $format_tgl_sk = str_replace(array_keys($indonesianMonths), $indonesianMonths, $formattedDate);
 
         // $format_tgl_sk = strftime("%d %B %Y", strtotime($result['tgl_SK']));
-        $kls_jab = $result['kelas_jabatan'];
-        $format_kls_jabatan = preg_replace("/\((.*?)\)/", "(<em>$1</em>)", $kls_jab);
+        $kls_jab = formatKelasJabatan((int) $result['kelas_jabatan']);
         
-
-
         $template->setValue('nomorsk', $final_nosk);
         $template->setValue('nama', $result['nama_lengkap']);
         $template->setValue('nip', $result['nip']);

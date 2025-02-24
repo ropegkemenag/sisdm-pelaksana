@@ -239,6 +239,31 @@ function initSelect2s() {
     });
 }
 
+function updateKelasJabatan(selectElement, rowId) {
+  var id = selectElement.value
+  axios.get('getjabatan/'+id)
+  .then(function (response) {
+    if(response.data.status == 'success'){
+      console.log(response.data.data.kelas_jabatan);
+      var jabatan = response.data.data;
+      $('#kelas_jabatan_' + rowId).val(convertKelasJabatanToText(jabatan.kelas_jabatan));
+    }else{
+      alert(response.data.message);
+    }
+  });
+}
+
+function convertKelasJabatanToText(value) {
+    var mapping = {
+        3: "tiga",
+        5: "lima",
+        6: "enam",
+        7: "tujuh"
+    };
+    return mapping[value] ? value + " (" + mapping[value] + ")" : value;
+}
+
+
 function getsatker($id) {
   axios.get('manajemen/pegawai/getcountsatker/'+$id)
   .then(function (response) {
@@ -270,7 +295,7 @@ function proses(button)
   const noSk = row.find('#no_sk').val();
   const tglSk = row.find('#tgl_sk').val();
   const tmt = row.find('#tmt').val();
-  const kelasjabatan = row.find('#kelas_jabatan').val();
+  const kelasjabatan = row.find('.kelas_jabatan').val();
   
   if (!noSk || !tglSk || !kelasjabatan) {
         alert('Semua input harus diisi!');

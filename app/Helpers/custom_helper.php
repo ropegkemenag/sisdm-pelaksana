@@ -365,3 +365,15 @@ function decrypt($string)
 	$salt = explode(":",$string)[1]; $string = explode(":",$string)[0]; // read salt from entry
 	return openssl_decrypt(base64_decode($string), 'AES-256-CBC', ENCRYPTION_KEY, 0, str_pad(substr($salt, 0, 16), 16, '0', STR_PAD_LEFT));
 }
+
+function formatKelasJabatan($value) {
+  $value = (int) $value;
+  
+  $mapping = [
+      3 => "tiga",
+      5 => "lima",
+      6 => "enam",
+      7 => "tujuh"
+  ];
+  return isset($mapping[$value]) ? "$value (<i>{$mapping[$value]}</i>)" : $value;
+}
