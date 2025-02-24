@@ -31,7 +31,7 @@
           <a class="nav-link" data-bs-toggle="tab" href="#nav-tt" role="tab">Tanda Tangan <span class="badge bg-danger">0</span></a>
       </li>
       <li class="nav-item waves-effect waves-light">
-          <a class="nav-link" data-bs-toggle="tab" href="#nav-selesai" role="tab">Selesai <span class="badge bg-success">12</span></a>
+          <a class="nav-link" data-bs-toggle="tab" href="#nav-selesai" role="tab">Selesai <span class="badge bg-success">0</span></a>
       </li>
   </ul>
   <div class="tab-content text-muted">
