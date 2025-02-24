@@ -275,6 +275,7 @@ class Pertama extends BaseController
         $template->setValue('kepala', $pengaturan->jabatan);
         $template->setValue('namakepala', $pengaturan->nama_pejabat);
         $template->setValue('nipkepala',  $pengaturan->nip_pejabat);
+        $template->setValue('anpejabat',  $pengaturan->an_pejabat);
         $template->setValue('satker',  $pengaturan->nama_satker);
 
         $filePath = WRITEPATH . 'uploads/' . 'document_' . $nip . '.docx';
